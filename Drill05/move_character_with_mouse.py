@@ -1,4 +1,5 @@
 from pico2d import *
+import random
 
 TUK_WIDTH, TUK_HEIGHT = 1280, 1024
 open_canvas(TUK_WIDTH, TUK_HEIGHT)
@@ -21,7 +22,10 @@ def handle_events():
             running = False
     pass
 
-
+def draw_mouse_point(p):
+    x = random.uniform(0, 800)
+    y = random.uniform(0, 600)
+    mouse.draw(x, y)
 
 running = True
 x, y = TUK_WIDTH // 2, TUK_HEIGHT // 2
@@ -32,8 +36,13 @@ while running:
     clear_canvas()
     TUK_ground.draw(TUK_WIDTH // 2, TUK_HEIGHT // 2)
     #character.clip_draw(frame * 100, 100 * 1, 100, 100, x, y)
-    mouse.draw(x, y)
-    update_canvas()
+    while True:
+        # x = random.uniform(0, 800)
+        # y = random.uniform(0, 600)
+        # mouse.draw(x,y)
+        delay(0.01)
+        update_canvas()
+
     frame = (frame + 1) % 8
 
     handle_events()
