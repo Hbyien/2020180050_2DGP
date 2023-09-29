@@ -1,7 +1,7 @@
 from pico2d import *
 import random
 
-TUK_WIDTH, TUK_HEIGHT = 1280, 1024
+TUK_WIDTH, TUK_HEIGHT = 1000, 800
 open_canvas(TUK_WIDTH, TUK_HEIGHT)
 
 TUK_ground = load_image('TUK_GROUND.png')
@@ -25,9 +25,16 @@ def handle_events():
 def draw_mouse_point(x, y):
     mouse.draw(x, y)
 
+
 def character_move(x,y, a, b):
-    global frame
-    character.clip_draw(frame * 100, 100 * 1, 100, 100, x, y)
+    frame = 0
+    for i in range(0, 100, 5):
+        t = i /100
+        x1 = (1 - t)*a + t*x
+        y1 = (1 - t)*b + t*y
+        frame = (frame + 1) % 8
+        character.clip_draw(frame * 100, 100, 100, 100, x1, y1)
+
 
 
 running = True
@@ -38,20 +45,32 @@ hide_cursor()
 while running:
     clear_canvas()
     TUK_ground.draw(TUK_WIDTH // 2, TUK_HEIGHT // 2)
-    #character.clip_draw(frame * 100, 100 * 1, 100, 100, x, y)
-    while True:
-        handle_events()
-        x,y =a, b
-        a = random.uniform(0, TUK_WIDTH)
-        b = random.uniform(0, TUK_HEIGHT)
-        # mouse.draw(x,y)
+    x, y = a, b
+    a = random.uniform(0, TUK_WIDTH)
+    b = random.uniform(0, TUK_HEIGHT)
+    dir = 100
+    for i in range(0, 100, 5):
+        clear_canvas()
+        TUK_ground.draw(TUK_WIDTH // 2, TUK_HEIGHT // 2)
+
         draw_mouse_point(a, b)
-        character_move(x, y,a,b)
+        t = i /100
+        x1 = (1 - t)*x + t*a
+        y1 = (1 - t)*y + t*b
+        if (a-x)>0:
+            dir =100
+        elif (a-x <0):
+            dir= 0
 
-        delay(0.01)
+        character.clip_draw(frame * 100, dir, 100, 100, x1, y1)
+
         update_canvas()
-
+        handle_events()
         frame = (frame + 1) % 8
+        delay(0.05)
+    delay(0.05)
+
+
 
 
 
