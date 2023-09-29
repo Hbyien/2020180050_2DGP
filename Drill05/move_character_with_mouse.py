@@ -26,14 +26,6 @@ def draw_mouse_point(x, y):
     mouse.draw(x, y)
 
 
-def character_move(x,y, a, b):
-    frame = 0
-    for i in range(0, 100, 5):
-        t = i /100
-        x1 = (1 - t)*a + t*x
-        y1 = (1 - t)*b + t*y
-        frame = (frame + 1) % 8
-        character.clip_draw(frame * 100, 100, 100, 100, x1, y1)
 
 
 
