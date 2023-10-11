@@ -80,11 +80,7 @@ class AutoRun:
 
     @staticmethod
     def enter(boy, e):
-        if right_down(e) or left_up(e): #오른쪽 런
-            boy.dir, boy.action = 1, 1
-        elif left_down(e) or right_up(e): #왼쪽 런
-            boy.dir, boy.action = -1, 0
-
+        pass
     @staticmethod
     def exit(boy,e):
         pass
@@ -136,7 +132,7 @@ class StateMachine:
             Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, time_out: Sleep, a_down: AutoRun},
             Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle},
             Sleep: {right_down: Run, left_down: Run, right_up: Run, left_up: Run, space_down: Idle},
-            AutoRun{time_out:Idle}
+            AutoRun: {time_out:Idle}
         }
 
     def handle_event(self, e):
