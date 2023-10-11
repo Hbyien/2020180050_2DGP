@@ -80,7 +80,15 @@ class AutoRun:
 
     @staticmethod
     def enter(boy, e):
-        pass
+        if boy.action == 3:
+            print('오른쪽')
+            boy.action = 1
+            boy.dir = 1
+        elif boy.action ==2:
+            print('왼쪽')
+            boy.action = 0
+            boy.dir = -1
+
     @staticmethod
     def exit(boy,e):
         pass
@@ -88,15 +96,22 @@ class AutoRun:
     @staticmethod
     def do(boy):
         boy.frame = (boy.frame + 1) % 8
-        boy.x += boy.dir *5
+        boy.x += boy.dir *15
         if get_time() - boy.AutoRun_time > 5:
             boy.state_machine.handle_event(('TIME_OUT', 0))
 
+        if boy.x <= 0:
+            boy.dir = 1
+            boy.action =1
 
+        elif boy.x >= 800:
+            boy.dir = -1
+            boy.action = 0
 
     @staticmethod
     def draw(boy):
-        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100,boy.x ,boy.y, 200, 200)
+        boy.image.clip_draw(boy.frame * 100, boy.action*100 , 100, 100,boy.x ,boy.y+ 25, 200, 200)
+
 
 
 class Idle:
