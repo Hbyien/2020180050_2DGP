@@ -89,11 +89,14 @@ class AutoRun:
     def do(boy):
         boy.frame = (boy.frame + 1) % 8
         boy.x += boy.dir *5
+        if get_time() - boy.AutoRun_time > 5:
+            boy.state_machine.handle_event(('TIME_OUT', 0))
+
 
 
     @staticmethod
     def draw(boy):
-        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100,boy.x  ,boy.y)
+        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100,boy.x ,boy.y, 200, 200)
 
 
 class Idle:
@@ -107,6 +110,7 @@ class Idle:
         boy.dir = 0
         boy.frame = 0
         boy.idle_start_time = get_time()
+        boy.AutoRun_time = get_time()
         pass
 
     @staticmethod
@@ -132,7 +136,7 @@ class StateMachine:
             Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, time_out: Sleep, a_down: AutoRun},
             Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle},
             Sleep: {right_down: Run, left_down: Run, right_up: Run, left_up: Run, space_down: Idle},
-            AutoRun: {time_out:Idle}
+            AutoRun: {time_out: Idle}
         }
 
     def handle_event(self, e):
