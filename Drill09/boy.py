@@ -1,6 +1,6 @@
 # 이것은 각 상태들을 객체로 구현한 것임.
 
-from pico2d import load_image, SDLK_SPACE, SDL_KEYDOWN, get_time,SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT
+from pico2d import load_image, SDLK_SPACE, SDL_KEYDOWN, get_time,SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a
 import math
 
 
@@ -22,6 +22,9 @@ def left_down(e):
 
 def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
+
+def a_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_a
 
 
 class Sleep:
@@ -50,6 +53,30 @@ class Sleep:
                                           math.pi / 2, '', boy.x - 25, boy.y - 25, 100, 100)
 
 class Run:
+
+    @staticmethod
+    def enter(boy, e):
+        if right_down(e) or left_up(e): #오른쪽 런
+            boy.dir, boy.action = 1, 1
+        elif left_down(e) or right_up(e): #왼쪽 런
+            boy.dir, boy.action = -1, 0
+
+    @staticmethod
+    def exit(boy,e):
+        pass
+
+    @staticmethod
+    def do(boy):
+        boy.frame = (boy.frame + 1) % 8
+        boy.x += boy.dir *5
+
+
+    @staticmethod
+    def draw(boy):
+        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100,boy.x  ,boy.y)
+
+
+class AutoRun:
 
     @staticmethod
     def enter(boy, e):
@@ -106,9 +133,10 @@ class StateMachine:
         self.cur_state = Idle
         self.boy = boy
         self.transitions = { #딕셔너리 사용 키로부터 벨류를 찾아낸다.
-            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, time_out: Sleep},
+            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, time_out: Sleep, a_down: AutoRun},
             Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle},
-            Sleep: {right_down: Run, left_down: Run, right_up: Run, left_up: Run, space_down: Idle}
+            Sleep: {right_down: Run, left_down: Run, right_up: Run, left_up: Run, space_down: Idle},
+            AutoRun{time_out:Idle}
         }
 
     def handle_event(self, e):
@@ -119,8 +147,6 @@ class StateMachine:
                 self.cur_state.enter(self.boy, e)
                 return True
         return  False
-
-
 
 
     def start(self):
