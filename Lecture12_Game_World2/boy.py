@@ -1,8 +1,7 @@
 # 이것은 각 상태들을 객체로 구현한 것임.
-
+import game_world
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
 
-import game_world
 from ball import Ball
 # state event check
 # ( state event type, event value )
@@ -123,6 +122,7 @@ class StateMachine:
             Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, time_out: Sleep, space_down: Idle},
             Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Run},
             Sleep: {right_down: Run, left_down: Run, right_up: Run, left_up: Run}
+
         }
 
     def start(self):
@@ -150,7 +150,7 @@ class StateMachine:
 
 class Boy:
     def __init__(self):
-        self.x, self.y = 400, 60
+        self.x, self.y = 400, 90
         self.frame = 0
         self.action = 3
         self.dir = 0
@@ -169,10 +169,10 @@ class Boy:
         self.state_machine.draw()
 
     def fire_ball(self):
-        ball = Ball(self.x, self.y, self.face_dir * 10)
-        game_world.add_object(ball)
+        ball = Ball(self.x, self.y, self.face_dir*10)
+        game_world.add_objects(ball)
 
-        if self.face_dir == -1:
-            print('FIRE BALL LEFT')
-        elif self.face_dir == 1:
-            print('FIRE BALL RIGHT')
+        if self.face_dir ==1:
+            print('fireball to right')
+        elif self.face_dir == -1:
+            print('fireball to left')
