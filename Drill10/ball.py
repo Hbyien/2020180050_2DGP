@@ -1,4 +1,5 @@
 from pico2d import load_image
+import game_world
 
 class Ball:
     image = None
@@ -12,4 +13,11 @@ class Ball:
         self.image.draw(self.x, self.y)
 
     def update(self):
-         self.x += self.velocity
+        self.x += self.velocity
+
+        if self.x < 25 or self.x > 800 - 25:
+            game_world.remove_object(self)
+
+    def fire_ball(self):
+        ball = Ball(self.x, self.y, self.face_dir * 10)
+        game_world.add_object(ball, 1)

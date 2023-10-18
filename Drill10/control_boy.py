@@ -1,9 +1,10 @@
 from pico2d import *
 
-import game_world
 from grass import Grass
+from grass import Grass2
 from boy import Boy
 
+import game_world
 
 
 # Game object class here
@@ -26,34 +27,30 @@ def reset_world():
     global running
     global grass
     global team
-    #global world
+    global grass2
+
     global boy
 
     running = True
-    #world = []
 
     grass = Grass()
-    game_world.add_objects(grass)
-    #world.append(grass)
+    grass2 = Grass2()
+    game_world.add_object(grass, 0)
+    game_world.add_object( grass2, 2)
 
     boy = Boy()
-    game_world.add_objects(boy)
-    #world.append(boy)
-
+    game_world.add_object(boy, 1)
 
 
 def update_world():
     game_world.update()
-    # for o in world:
-    #     o.update()
-    # pass
+
+    pass
 
 
 def render_world():
     clear_canvas()
-    # for o in world:
-    #     o.draw()
-    game_world.update()
+    game_world.render()
     update_canvas()
 
 
