@@ -2,19 +2,13 @@ from pico2d import *
 
 import random
 import math
-<<<<<<< HEAD
-=======
 
 import boy
->>>>>>> e7ed283fb1c780e8cbb5e7ca6555ffd349b7e4f6
 import game_framework
 import game_world
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
 import play_mode
-<<<<<<< HEAD
-=======
 from boy import Boy
->>>>>>> e7ed283fb1c780e8cbb5e7ca6555ffd349b7e4f6
 
 
 # zombie Run Speed
@@ -57,14 +51,11 @@ class Zombie:
         self.tx, self.ty = 1000, 1000
         self.build_behavior_tree()
 
-<<<<<<< HEAD
-=======
         self.patrol_locations = [(43, 274), (1118, 274), (1050, 494), (575, 804), (235, 991), (575, 804), (1050, 494), (1118, 274)]
         self.loc_no = 0
 
 
 
->>>>>>> e7ed283fb1c780e8cbb5e7ca6555ffd349b7e4f6
 
     def get_bb(self):
         return self.x - 50, self.y - 50, self.x + 50, self.y + 50
@@ -73,11 +64,7 @@ class Zombie:
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
         # fill here
-<<<<<<< HEAD
-
-=======
         self.bt.run()
->>>>>>> e7ed283fb1c780e8cbb5e7ca6555ffd349b7e4f6
 
     def draw(self):
         if math.cos(self.dir) < 0:
@@ -86,11 +73,7 @@ class Zombie:
             Zombie.images[self.state][int(self.frame)].draw(self.x, self.y, 100, 100)
         self.font.draw(self.x - 10, self.y + 60, f'{self.ball_count}', (0, 0, 255))
 
-<<<<<<< HEAD
-        Zombie.marker_image.draw(self.tx+25, self.ty-25)
-=======
         Zombie.marker_image.draw(self.tx + 25, self.ty - 25)
->>>>>>> e7ed283fb1c780e8cbb5e7ca6555ffd349b7e4f6
         draw_rectangle(*self.get_bb())
 
     def handle_event(self, event):
@@ -101,14 +84,6 @@ class Zombie:
             self.ball_count += 1
 
 
-<<<<<<< HEAD
-    def set_target_location(self, x=None, y=None):
-        if not x or not y:
-            raise ValueError('Location should be given')
-        self.tx, self.ty = x, y
-        return BehaviorTree.SUCCESS
-
-=======
 
     def set_target_location(self, x=None, y=None):
         if not x or not y:
@@ -118,27 +93,19 @@ class Zombie:
 
         self.tx, self.ty = x, y
         pass
->>>>>>> e7ed283fb1c780e8cbb5e7ca6555ffd349b7e4f6
 
     def distance_less_than(self, x1, y1, x2, y2, r):
         distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
         return distance2 < (PIXEL_PER_METER * r) ** 2
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> e7ed283fb1c780e8cbb5e7ca6555ffd349b7e4f6
     def move_slightly_to(self, tx, ty):
         self.dir = math.atan2(ty - self.y, tx - self.x)
         self.speed = RUN_SPEED_PPS
         self.x += self.speed * math.cos(self.dir) * game_framework.frame_time
         self.y += self.speed * math.sin(self.dir) * game_framework.frame_time
 
-<<<<<<< HEAD
-
-=======
->>>>>>> e7ed283fb1c780e8cbb5e7ca6555ffd349b7e4f6
     def move_to(self, r=0.5):
         self.state = 'Walk'
         self.move_slightly_to(self.tx, self.ty)
@@ -149,21 +116,6 @@ class Zombie:
 
 
     def set_random_location(self):
-<<<<<<< HEAD
-        pass
-
-    def is_boy_nearby(self, distance):
-        pass
-
-    def move_to_boy(self, r=0.5):
-        pass
-
-    def get_patrol_location(self):
-        pass
-
-    def build_behavior_tree(self):
-        pass
-=======
         self.tx, self.ty = random.randint(100, 1280- 100), random.randint(100, 1024 -100)
         return BehaviorTree.SUCCESS
 
@@ -224,4 +176,3 @@ class Zombie:
 
 
         self.bt = BehaviorTree(root)
->>>>>>> e7ed283fb1c780e8cbb5e7ca6555ffd349b7e4f6
