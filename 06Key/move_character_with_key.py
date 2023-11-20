@@ -2,7 +2,7 @@ from pico2d import *
 
 
 open_canvas()
-grass = load_image('grass.png')
+grass = load_image('r2.jpg')
 character = load_image('animation_sheet.png')
 
 
