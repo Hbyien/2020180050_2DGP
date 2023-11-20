@@ -1,8 +1,10 @@
 # 이것은 각 상태들을 객체로 구현한 것임.
 
-from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
-from ball import Ball, BigBall
+from pico2d import get_time, load_image, load_font, clamp, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, \
+    draw_rectangle
+from ball import Ball
 import game_world
+import game_framework
 
 # state event check
 # ( state event type, event value )
@@ -32,6 +34,29 @@ def time_out(e):
 
 
 
+
+# Boy Run Speed
+PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
+RUN_SPEED_KMPH = 20.0  # Km / Hour
+RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
+
+# Boy Action Speed
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 8
+
+
+
+
+
+
+
+
+
+
+
 class Idle:
 
     @staticmethod
@@ -53,13 +78,13 @@ class Idle:
 
     @staticmethod
     def do(boy):
-        boy.frame = (boy.frame + 1) % 8
+        boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         if get_time() - boy.wait_time > 2:
             boy.state_machine.handle_event(('TIME_OUT', 0))
 
     @staticmethod
     def draw(boy):
-        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100, boy.x, boy.y)
+        boy.image.clip_draw(int(boy.frame) * 100, boy.action * 100, 100, 100, boy.x, boy.y)
 
 
 
@@ -81,13 +106,15 @@ class Run:
 
     @staticmethod
     def do(boy):
-        boy.frame = (boy.frame + 1) % 8
-        boy.x += boy.dir * 5
-        pass
+        # boy.frame = (boy.frame + 1) % 8
+        boy.x += boy.dir * RUN_SPEED_PPS * game_framework.frame_time
+        boy.x = clamp(25, boy.x, 1600-25)
+        boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+
 
     @staticmethod
     def draw(boy):
-        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100, boy.x, boy.y)
+        boy.image.clip_draw(int(boy.frame) * 100, boy.action * 100, 100, 100, boy.x, boy.y)
 
 
 
@@ -104,15 +131,16 @@ class Sleep:
 
     @staticmethod
     def do(boy):
-        boy.frame = (boy.frame + 1) % 8
+        boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+
 
     @staticmethod
     def draw(boy):
         if boy.face_dir == -1:
-            boy.image.clip_composite_draw(boy.frame * 100, 200, 100, 100,
+            boy.image.clip_composite_draw(int(boy.frame) * 100, 200, 100, 100,
                                           -3.141592 / 2, '', boy.x + 25, boy.y - 25, 100, 100)
         else:
-            boy.image.clip_composite_draw(boy.frame * 100, 300, 100, 100,
+            boy.image.clip_composite_draw(int(boy.frame) * 100, 300, 100, 100,
                                           3.141592 / 2, '', boy.x - 25, boy.y - 25, 100, 100)
 
 
@@ -151,30 +179,23 @@ class StateMachine:
 
 class Boy:
     def __init__(self):
-        self.x, self.y = 400, 90
+        self.x, self.y = 50, 90
         self.frame = 0
         self.action = 3
         self.face_dir = 1
         self.dir = 0
         self.image = load_image('animation_sheet.png')
+        self.font = load_font('ENCR10B.TTF', 16)
         self.state_machine = StateMachine(self)
         self.state_machine.start()
-        self.item = None
+        self.ball_count = 10
+
 
     def fire_ball(self):
-        if self.item == 'Ball':
+        if self.ball_count > 0:
+            self.ball_count -= 1
             ball = Ball(self.x, self.y, self.face_dir*10)
             game_world.add_object(ball)
-        elif self.item== 'BigBall':
-            ball = BigBall(self.x, self.y, self.face_dir * 10)
-            game_world.add_object(ball)
-        # if self.face_dir == -1:
-        #     print('FIRE BALL LEFT')
-        #
-        # elif self.face_dir == 1:
-        #     print('FIRE BALL RIGHT')
-
-        pass
 
     def update(self):
         self.state_machine.update()
@@ -184,3 +205,15 @@ class Boy:
 
     def draw(self):
         self.state_machine.draw()
+        self.font.draw(self.x-10, self.y + 50, f'{self.ball_count:02d}', (255, 255, 0))
+        #디버그 바운딩 박스 그리기
+        draw_rectangle(*self.get_bb())
+
+    # fill here
+    def get_bb(self):
+        return self.x -20, self.y -50, self.x+20, self.y+50
+
+
+    def handle_collision(self, group, other):
+        if group == 'boy:ball': #아 볼과 충돌했구나
+            self.ball_count +=1
